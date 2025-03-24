@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 pipeline
 {
 	agent master
@@ -56,3 +57,55 @@ pipeline
 		}
 		
 	}
+=======
+pipeline
+{
+	agent any
+	stages
+	{
+		stage('Continues Download')
+		{
+			steps
+				{
+					git 'https://github.com/balajimanipi/java-pro.git'
+				}
+		}
+		stage('Continues Build')
+		{
+			steps
+				{
+					sh 'mvn package'
+				}
+		}
+		stage('Continues Deploy')
+		{
+			steps
+				{
+					sh 'scp /var/lib/jenkins/workspace/S-pipeline/webapp/target/webapp.war root@192.168.75.130:/var/lib/tomcat9/webapps/testenv.war'
+				}
+		}
+		stage('Continues Testing')
+		{
+			steps
+				{
+					 git 'https://github.com/balajimanipi/FunctionlTesting.git'
+				}
+		}						
+	}
+	
+	post
+	{
+		success
+		{
+			input message: 'Waiting for approval from DM', submitter: 'Srinivas'
+    		 	sh 'scp /var/lib/jenkins/workspace/S-pipeline/webapp/target/webapp.war root@192.168.75.132:/var/lib/tomcat9/webapps/prodenv.war'
+		}
+		
+		failure
+		{
+			mail bcc: '', body: '', cc: '', from: '', replyTo: '', subject: 'Build failed', to: 'balaji.m@gmail.com'
+		}
+		
+	}
+}
+>>>>>>> 7ac456b43408dd7ab2da0648cf3b9400ae48f17e
